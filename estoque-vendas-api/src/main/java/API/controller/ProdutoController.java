@@ -13,52 +13,44 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import api.model.Produto;
-import api.repository.ProdutoRepository;
+import api.service.ProdutoService;
 
 @RestController
 @RequestMapping("/produtos")
 public class ProdutoController {
 
-    private final ProdutoRepository produtoRepository;
+    private ProdutoService produtoService;
 
-    public ProdutoController(ProdutoRepository produtoRepository) {
-        this.produtoRepository = produtoRepository;
-    }
-
-    @GetMapping
-    public List<Produto> listar() {
-        return produtoRepository.findAll();
-    }
-
-    @PostMapping
-    public Produto criar(@RequestBody Produto produto) {
-        return produtoRepository.save(produto);
+    @GetMapping()
+    public List<Produto> listarTodos() {
+        return produtoService.listarTodos();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Produto> buscarPorId(@PathVariable Long id) {
-        return produtoRepository.findById(id)
+        return produtoService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/{id}")
+    public Produto salvar(@RequestBody Produto produto) {
+        return produtoService.salvar(produto);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Produto> atualizar(@PathVariable Long id, @RequestBody Produto produto) {
-        return produtoRepository.findById(id)
-                .map(p -> {
-                    p.setNome(produto.getNome());
-                    p.setPreco(produto.getPreco());
-                    p.setQuantidadeEstoque(produto.getQuantidadeEstoque());
-                    return ResponseEntity.ok(produtoRepository.save(p));
-                }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Produto> atualizar(@PathVariable Long id, @RequestBody Produto produtoAtualizado) {
+        try {
+            Produto produto = produtoService.atualizar(id, produtoAtualizado);
+            return ResponseEntity.ok(produto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deletar(@PathVariable Long id) {
-        return produtoRepository.findById(id)
-                .map(p -> {
-                    produtoRepository.delete(p);
-                    return ResponseEntity.noContent().build();
-                }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        produtoService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }
