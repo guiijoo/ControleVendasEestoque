@@ -1,4 +1,4 @@
-package API.de.Controle.de.Estoque.e.Vendas;
+package api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
