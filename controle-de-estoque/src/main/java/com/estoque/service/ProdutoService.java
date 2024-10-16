@@ -10,8 +10,13 @@ import com.estoque.repository.ProdutoRepository;
 
 @Service
 public class ProdutoService {
+
     @Autowired
     private ProdutoRepository produtoRepository;
+
+    public ProdutoService(ProdutoRepository produtoRepository) {
+        this.produtoRepository = produtoRepository;
+    }
 
     public List<Produto> getAllprodutos() {
         return produtoRepository.findAll();

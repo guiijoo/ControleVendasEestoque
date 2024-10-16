@@ -13,6 +13,10 @@ public class CompraService {
 
     private CompraRepository compraRepository;
 
+    public CompraService(CompraRepository compraRepository) {
+        this.compraRepository = compraRepository;
+    }
+
     public List<Compra> findAll() {
         return compraRepository.findAll();
     }
